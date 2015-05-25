@@ -18,7 +18,7 @@ dependencies {
     // real examples
     //compile 'com.mod-buildcraft:buildcraft:6.0.8:dev'  // adds buildcraft to the dev env
     //compile 'com.googlecode.efficient-java-matrix-library:ejml:0.24' // adds ejml to the dev env
-    runtime 'org.ow2.asm:asm-all:5.0.4'
+    runtime 'org.ow2.asm:asm-debug-all:5.0.4'
     runtime 'commons-io:commons-io:2.4'
 
     // for more info...
