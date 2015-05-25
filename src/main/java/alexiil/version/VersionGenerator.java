@@ -11,6 +11,9 @@ import java.util.zip.ZipInputStream;
 
 import org.apache.commons.io.IOUtils;
 
+import alexiil.version.api.VersionedApi;
+
+@VersionedApi
 public class VersionGenerator {
     private final String olderVersion, packageName;
     /** The older version of the compiled jar */
@@ -23,6 +26,7 @@ public class VersionGenerator {
     private String newVersion;
     private List<API> apis = new ArrayList<API>();
 
+    @VersionedApi.Final
     public VersionGenerator(String olderVersion, String packageName, File compiledOlder, File compiledNewer, List<File> otherFiles)
             throws IOException {
         this.olderVersion = olderVersion;
@@ -36,8 +40,44 @@ public class VersionGenerator {
         }
     }
 
+    @VersionedApi.Beta
+    public String getVersion() {
+        return newVersion;
+    }
+
+    @VersionedApi.Beta
+    public int[] getVersionInts() {
+        if (newVersion == null)
+            return new int[] { -1, -1, -1 };
+
+        String[] versions = newVersion.split("\\.");
+
+        int major = Integer.valueOf(versions[0]);
+        int minor = Integer.valueOf(versions[1]);
+        int patch = Integer.valueOf(versions[2]);
+
+        return new int[] { major, minor, patch };
+    }
+
+    /** Sets the new version to the given string. It is recommended that you call this after {@link #makeVersioning()}
+     * but before {@link #editFiles()}. */
+    @VersionedApi.Beta
+    public void setVersion(String version) {
+        newVersion = version;
+    }
+
+    @VersionedApi.Beta
+    public void setVersion(int[] version) {
+        if (version == null)
+            throw new NullPointerException("Cannot set a null version!");
+        if (version.length != 3)
+            throw new IllegalArgumentException("Must have a length of 3!");
+        newVersion = version[0] + "." + version[1] + "." + version[2];
+    }
+
     /** Makes the newer version and the list of files names that need to be changed from the differences between the
      * {@link #compiledOlder} and the {@link #compiledNewer} files; */
+    @VersionedApi.Final
     public void makeVersioning() {
         Map<String, byte[]> originalEntrys = populateEntrys(InternalUtils.convertToZipInputStream(compiledOlder));
         Map<String, byte[]> newerEntrys = populateEntrys(InternalUtils.convertToZipInputStream(compiledNewer));
@@ -109,6 +149,7 @@ public class VersionGenerator {
     }
 
     /** Actually edit the files to change them to have */
+    @VersionedApi.Final
     public void editFiles() {
         ClassVersionWriter writer = new ClassVersionWriter(newVersion, packageName, apis);
         writer.editFile(compiledNewer);
@@ -136,7 +177,7 @@ public class VersionGenerator {
 
     /** A class that contains information about a particular API. This might not have changed between the versions of the
      * file. */
-    public static class API {
+    static class API {
         /** The first version that added this APIChange */
         public final String firstVersion;
         /** The string name of the position of the file, without the file type (so "alexiil/mods/civ/CivCraft.java" would

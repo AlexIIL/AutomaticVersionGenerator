@@ -5,6 +5,7 @@ repositories {
 
 apply plugin: 'java'
 apply plugin: 'eclipse'
+apply plugin: 'maven'
 
 group= "alexiil.version" // http://maven.apache.org/guides/mini/guide-naming-conventions.html
 archivesBaseName = "AutomaticVersionGenerator"
